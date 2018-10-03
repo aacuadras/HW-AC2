@@ -98,3 +98,100 @@ void Autocompleter::completions_recurse(string x, Node* root, vector<Entry> &C)
 		completions_recurse(x, root->right, C);
 	}
 }
+
+void Autocompleter::insert(string x, int freq)
+{
+	Entry obj;
+	obj.s = x;
+	obj.freq = freq;
+
+	insert_recurse(obj, this->root);
+
+}
+
+void Autocompleter::insert_recurse(Entry e, Node *&root)
+{
+	if (root == nullptr)
+	{
+		Node *baby = new Node(e);
+		root = baby;
+	}
+
+	if (e.s == root->e.s && e.freq == root->e.freq)
+	{
+		return;
+	}
+	else
+	{
+		if(root->e.s.substr(0, e.s.length()) > e.s)
+		{
+			insert_recurse(e, root->left);
+		}
+		else
+		{
+			insert_recurse(e, root->right);
+		}
+	}
+
+	rebalance(root);
+}
+
+void Autocompleter::rebalance(Node *root)
+{
+	int heightdiff = height(root->left) - height(root->right);
+
+	if(heightdiff > 1)
+	{
+		if (height(root->left) > 0)
+		{
+
+		}
+	}
+	else if (heightdiff < -1)
+	{
+
+	}
+}
+
+void Autocompleter::right_right_rotate(Node* &root)
+{
+	Node *a, *b, *bl;
+
+	a = root;
+	b = root->right;
+	bl = b->left;
+
+	root = b;
+	a->right = bl;
+	b->left = a;
+
+}
+void Autocompleter::left_left_rotate(Node* &root)
+{
+	Node *a, *b, *br;		//these pointers will point to 
+
+	a = root;
+	b = root->left;
+	br = b->right;
+
+	root = b;
+	a->left = br;
+	b->right = a;
+}
+void Autocompleter::right_left_rotate(Node *&root)
+{
+	//write some code here to make it a right right rotate
+
+
+
+	right_right_rotate(root);
+}
+void Autocompleter::left_right_rotate(Node *&root)
+{
+	//write some code here to make it a left left rotate
+
+
+
+	left_left_rotate(root);
+}
+
