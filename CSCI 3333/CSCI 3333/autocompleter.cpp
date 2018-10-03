@@ -1,5 +1,8 @@
 #include "autocompleter.h"
 
+///TODO
+//Use only right_rotate and left_rotate
+
 //Constructor
 Autocompleter::Autocompleter()
 {
@@ -138,16 +141,18 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 
 void Autocompleter::rebalance(Node *root)
 {
-	int heightdiff = height(root->left) - height(root->right);
-
-	if(heightdiff > 1)
+	int balfactor = height(root->left) - height(root->right);
+	
+	//If it's greater than 1, right rotate
+	if(balfactor > 1)
 	{
 		if (height(root->left) > 0)
 		{
 
 		}
 	}
-	else if (heightdiff < -1)
+	//If it's less than 1, left rotate
+	else if (balfactor < -1)
 	{
 
 	}
