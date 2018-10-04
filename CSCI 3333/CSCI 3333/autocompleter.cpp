@@ -24,13 +24,13 @@ int Autocompleter::size()
 int Autocompleter::size_recurse(Node * root)
 {
 	//If the root pointer points to null, it doesn't add 1 to the sum
-	if (this->root == nullptr)
+	if (root == nullptr)
 	{
 		return 0;
 	}
 	else
 	{
-		return (1 + size_recurse(this->root->left) + size_recurse(this->root->right));
+		return (1 + size_recurse(root->left) + size_recurse(root->right));
 	}
 }
 
@@ -102,6 +102,7 @@ void Autocompleter::completions_recurse(string x, Node* root, vector<Entry> &C)
 	}
 }
 
+//Insert function
 void Autocompleter::insert(string x, int freq)
 {
 	Entry obj;
@@ -112,6 +113,7 @@ void Autocompleter::insert(string x, int freq)
 
 }
 
+//Recursive insert function
 void Autocompleter::insert_recurse(Entry e, Node *&root)
 {
 	if (root == nullptr)
@@ -119,8 +121,7 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 		Node *baby = new Node(e);
 		root = baby;
 	}
-
-	if (e.s == root->e.s && e.freq == root->e.freq)
+	else if (e.s == root->e.s && e.freq == root->e.freq)
 	{
 		return;
 	}
@@ -136,6 +137,7 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 		}
 	}
 
+	//Will rebalance from the bottom to the top every time something is inserted
 	rebalance(root);
 }
 
@@ -143,21 +145,54 @@ void Autocompleter::rebalance(Node *root)
 {
 	int balfactor = height(root->left) - height(root->right);
 	
-	//If it's greater than 1, right rotate
+	//If it's greater than 1, right rotate (left case)
 	if(balfactor > 1)
 	{
-		if (height(root->left) > 0)
+		//If the height of the left subtree is greater than the height of the right subtree
+		//then left_left case (right rotate)
+		if (height(root->left) > height(root->right))
 		{
-
+			right_rotate(root);
+		}
+		//If the height of the right subtree is greater than the height of the left subtree
+		//then left_right case (left_right rotate)
+		else
+		{
+			left_right_rotate(root);
 		}
 	}
-	//If it's less than 1, left rotate
+	//If it's less than 1, left rotate (right case)
 	else if (balfactor < -1)
 	{
-
+		//If the height of the right subtree is greateer than the height of the left subtree
+		//then right_right case (left rotate)
+		if (height(root->left) < height(root->right))
+		{
+			left_rotate(root);
+		}
+		//If the height of the left subtree is greater than the height of the right subtree
+		//then right_left case (right_left rotate)
+		else
+		{
+			right_left_rotate(root);
+		}
 	}
 }
 
+//////////////////////////////////////////
+//Right rotate and left right rotate
+//////////////////////////////////////////
+
+
+
+//////////////////////////////////////////
+//Left rotate and right left rotate
+//////////////////////////////////////////
+
+
+
+
+/*
 void Autocompleter::right_right_rotate(Node* &root)
 {
 	Node *a, *b, *bl;
@@ -199,4 +234,5 @@ void Autocompleter::left_right_rotate(Node *&root)
 
 	left_left_rotate(root);
 }
+*/
 

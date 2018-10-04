@@ -118,7 +118,8 @@ private:
 	// Should run in O(1) time.
 	void right_rotate(Node* &root);
 	void left_rotate(Node* &root);
-	
+	void left_right_rotate(Node * &root);
+	void right_left_rotate(Node * &root);
 };
 
 #endif
