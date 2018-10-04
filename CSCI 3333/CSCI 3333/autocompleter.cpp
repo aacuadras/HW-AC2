@@ -120,8 +120,7 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 {
 	if (root == nullptr)
 	{
-		Node *baby = new Node(e);
-		root = baby;
+		root = new Node(e);
 	}
 	else if (e.s == root->e.s && e.freq == root->e.freq)
 	{
@@ -129,7 +128,7 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 	}
 	else
 	{
-		if(root->e.s.substr(0, e.s.length()) > e.s)
+		if (root->e.s.substr(0, e.s.length()) > e.s)
 		{
 			insert_recurse(e, root->left);
 		}
@@ -146,9 +145,9 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 void Autocompleter::rebalance(Node *root)
 {
 	int balfactor = height(root->left) - height(root->right);
-	
+
 	//If it's greater than 1, right rotate (left case)
-	if(balfactor > 1)
+	if (balfactor > 1)
 	{
 		//If the height of the left subtree is greater than the height of the right subtree
 		//then left_left case (right rotate)
@@ -181,15 +180,36 @@ void Autocompleter::rebalance(Node *root)
 	}
 }
 
-//////////////////////////////////////////
-//Right rotate and left right rotate
-//////////////////////////////////////////
 
+void Autocompleter::right_rotate(Node *&root)
+{
+	Node *a, *b, *br;
 
+	a = root;
+	b = root->left;
+	br = b->right;
 
-//////////////////////////////////////////
-//Left rotate and right left rotate
-//////////////////////////////////////////
+	a->left = br;
+	b->right = a;
+	root = b;
+
+	//update height somehow
+}
+
+void Autocompleter::right_left_rotate(Node *&root)
+{
+	Node *a, *b, *c;
+	a = root;
+	b = root->right;
+	c = b->left;
+
+	right_rotate(b);		
+
+	left_rotate(a);
+
+	//also update height somehow
+}
+
 
 ///First working on basic left rotation (supposing that the nodes being rotated doesn't have subtrees)
 void Autocompleter::left_rotate(Node * &root)
@@ -221,50 +241,3 @@ void Autocompleter::left_right_rotate(Node * &root)
 	//Right rotation
 	right_rotate(root);
 }
-
-
-
-/*
-void Autocompleter::right_right_rotate(Node* &root)
-{
-	Node *a, *b, *bl;
-
-	a = root;
-	b = root->right;
-	bl = b->left;
-
-	root = b;
-	a->right = bl;
-	b->left = a;
-
-}
-void Autocompleter::left_left_rotate(Node* &root)
-{
-	Node *a, *b, *br;		//these pointers will point to 
-
-	a = root;
-	b = root->left;
-	br = b->right;
-
-	root = b;
-	a->left = br;
-	b->right = a;
-}
-void Autocompleter::right_left_rotate(Node *&root)
-{
-	//write some code here to make it a right right rotate
-
-
-
-	right_right_rotate(root);
-}
-void Autocompleter::left_right_rotate(Node *&root)
-{
-	//write some code here to make it a left left rotate
-
-
-
-	left_left_rotate(root);
-}
-*/
-
