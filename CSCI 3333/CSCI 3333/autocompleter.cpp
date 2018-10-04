@@ -1,7 +1,9 @@
 #include "autocompleter.h"
 
 ///TODO
-//Use only right_rotate and left_rotate
+//Work on rotations
+//Aaron: left_rotation, left_right_rotation
+//Jonathan: right_rotation, right_left rotation
 
 //Constructor
 Autocompleter::Autocompleter()
@@ -189,6 +191,36 @@ void Autocompleter::rebalance(Node *root)
 //Left rotate and right left rotate
 //////////////////////////////////////////
 
+///First working on basic left rotation (supposing that the nodes being rotated doesn't have subtrees)
+void Autocompleter::left_rotate(Node * &root)
+{
+	if (root == this->root)
+	{
+		this->root = root->right;
+		Node * hold = root->right->left;
+		root->right->left = root;
+		root->right = hold;
+	}
+	else
+	{
+		Node * hold = root->right->left;
+		root->right->left = root;
+		root->right = hold;
+	}
+}
+
+///Basic left_right rotation
+void Autocompleter::left_right_rotate(Node * &root)
+{
+	//Left rotation
+	Node * hold = root->left;
+	Node * hold2 = root->left->right->left;
+	root->left->right->left = hold;
+	root->left->left = hold2;
+	root->left = root->left->right;
+	//Right rotation
+	right_rotate(root);
+}
 
 
 
