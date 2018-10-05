@@ -140,6 +140,7 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 
 	//Will rebalance from the bottom to the top every time something is inserted
 	rebalance(root);
+	root->height = update_height(root);
 }
 
 void Autocompleter::rebalance(Node *root)
@@ -151,7 +152,7 @@ void Autocompleter::rebalance(Node *root)
 	{
 		//If the height of the left subtree is greater than the height of the right subtree
 		//then left_left case (right rotate)
-		if (height(root->left) > height(root->right))
+		if (height(root->left->left) > height(root->left->right))
 		{
 			right_rotate(root);
 		}
@@ -159,7 +160,8 @@ void Autocompleter::rebalance(Node *root)
 		//then left_right case (left_right rotate)
 		else
 		{
-			left_right_rotate(root);
+			left_rotate(root->left);
+			right_rotate(root);
 		}
 	}
 	//If it's less than 1, left rotate (right case)
@@ -167,7 +169,7 @@ void Autocompleter::rebalance(Node *root)
 	{
 		//If the height of the right subtree is greateer than the height of the left subtree
 		//then right_right case (left rotate)
-		if (height(root->left) < height(root->right))
+		if (height(root->right->left) < height(root->right->left))
 		{
 			left_rotate(root);
 		}
@@ -175,7 +177,8 @@ void Autocompleter::rebalance(Node *root)
 		//then right_left case (right_left rotate)
 		else
 		{
-			right_left_rotate(root);
+			right_rotate(root->right);
+			left_rotate(root);
 		}
 	}
 }
@@ -189,13 +192,15 @@ void Autocompleter::right_rotate(Node *&root)
 	b = root->left;
 	br = b->right;
 
+	if (this->root == root)
+		this->root = b;
 	a->left = br;
 	b->right = a;
 	root = b;
 
 	//update height somehow
 }
-
+/*
 void Autocompleter::right_left_rotate(Node *&root)
 {
 	Node *a, *b, *c;
@@ -209,26 +214,24 @@ void Autocompleter::right_left_rotate(Node *&root)
 
 	//also update height somehow
 }
+*/
 
 
-///First working on basic left rotation (supposing that the nodes being rotated doesn't have subtrees)
+//"Completed left rotation"
 void Autocompleter::left_rotate(Node * &root)
 {
-	if (root == this->root)
-	{
-		this->root = root->right;
-		Node * hold = root->right->left;
-		root->right->left = root;
-		root->right = hold;
-	}
-	else
-	{
-		Node * hold = root->right->left;
-		root->right->left = root;
-		root->right = hold;
-	}
-}
+	Node *a, *b, *bl;
+	a = root;
+	b = root->right;
+	bl = root->right->left;
 
+	if (root == this->root)
+		this->root = b;
+	root->right = bl;
+	b->left = a;
+
+}
+/*
 ///Basic left_right rotation
 void Autocompleter::left_right_rotate(Node * &root)
 {
@@ -240,4 +243,21 @@ void Autocompleter::left_right_rotate(Node * &root)
 	root->left = root->left->right;
 	//Right rotation
 	right_rotate(root);
+}
+*/
+
+int Autocompleter::update_height(Node * root)
+{
+	if (root == nullptr)
+		return -1;
+	else
+	{
+		int left_height = update_height(root->left);
+		int right_height = update_height(root->right);
+
+		if (left_height > right_height)
+			return left_height;
+		else
+			return right_height;
+	}
 }
