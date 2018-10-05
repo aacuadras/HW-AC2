@@ -19,13 +19,6 @@ public:
 	// Must run in O(1) time.
 	Autocompleter();
 
-	///Test functions
-	void display();
-	string getRoot()
-	{
-		return this->root->e.s;
-	}
-
 
 	// Adds a string x to the dictionary.
 	// If x is already in the dictionary, does nothing.
@@ -119,7 +112,7 @@ private:
 	// the search in reverse search order.
 	// 
 	// Should run in O(1) time. 
-	void rebalance(Node* root);
+	void rebalance(Node* &root);
 
 	// Perform left and right rotations around the root
 	// of an AVL tree (helpful for implementing rebalance).
@@ -128,7 +121,6 @@ private:
 	void right_rotate(Node* &root);
 	void left_rotate(Node* &root);
 
-	void display_recuse(Node * root);
 	int update_height(Node *root);
 };
 
