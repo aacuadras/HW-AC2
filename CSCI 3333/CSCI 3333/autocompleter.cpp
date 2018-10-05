@@ -12,6 +12,9 @@ Autocompleter::Autocompleter()
 	root = nullptr;
 }
 
+//Insert function
+
+
 //Size function
 int Autocompleter::size()
 {
@@ -125,7 +128,8 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 	}
 	else
 	{
-		if (root->e.s.substr(0, e.s.length()) > e.s)
+		//if (root->e.s.substr(0, e.s.length()) > e.s)
+		if (root->e.s.compare(e.s) > 0)
 		{
 			insert_recurse(e, root->left);
 		}
@@ -136,8 +140,8 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 	}
 
 	//Will rebalance from the bottom to the top every time something is inserted
-	rebalance(root);
 	root->height = update_height(root);
+	rebalance(root);
 }
 
 void Autocompleter::rebalance(Node *root)
@@ -146,6 +150,7 @@ void Autocompleter::rebalance(Node *root)
 
 	//If it's greater than 1, right rotate (left case)
 	if (balfactor > 1)
+		//if(height(root->left) > (height(root->right) + 1))
 	{
 		//If the height of the left subtree is greater than the height of the right subtree
 		//then left_left case (right rotate)
@@ -163,10 +168,11 @@ void Autocompleter::rebalance(Node *root)
 	}
 	//If it's less than 1, left rotate (right case)
 	else if (balfactor < -1)
+		//else if(height(root->left) > (height(root->right) + 1))
 	{
 		//If the height of the right subtree is greateer than the height of the left subtree
 		//then right_right case (left rotate)
-		if (height(root->right->left) < height(root->right->left))
+		if (height(root->right->left) < height(root->right->right))
 		{
 			left_rotate(root);
 		}
@@ -194,37 +200,38 @@ void Autocompleter::right_rotate(Node *&root)
 	a->left = br;
 	b->right = a;
 	root = b;
-	
+
 
 	br->height = br->height + 0; //Idk if this updates the height for the node
 	a->height = a->height - 1 + max(br->height(root->left), br->height(root->right));	//I thought we could use max but apparantly it is not defined
 	b->height = b->height + 1; //I just know that b's height is +1 since it is moved up
+	/*
+	Node *a, *b, *br;
+
+	a = root;
+	b = root->left;
+	br = b->right;
+
+	if (this->root == root)
+		this->root = b;
+	root->left->right = a;
+	root->left = br;
+	root = b;
+	/*
+	a->left = br;
+	b->right = a;
+	root = b;
+
+	//update height somehow
+	root->height = update_height(root);
+	*/
 }
-/*
-void Autocompleter::right_left_rotate(Node *&root)
-{
-	Node *a, *b, *c, cr, cl; //declared pointers pointing to root(a)->right(b)->left(c)
-
-	a = root;		//a is decalred to root
-	b = root->right;		//b is to the right of the root
-	c = b->left;		//c is the value that needs to be put in the middle of a and b
-
-
-	right_rotate(b);		//a right left rotate consists of right rotate then
-							//a left rotate
-	left_rotate(a);
-
-	//also update height somehow
-
-	
-
-}
-*/
 
 
 //"Completed left rotation"
 void Autocompleter::left_rotate(Node * &root)
 {
+	/*
 	Node *a, *b, *bl;
 	a = root;
 	b = root->right;
@@ -232,33 +239,35 @@ void Autocompleter::left_rotate(Node * &root)
 
 	if (root == this->root)
 		this->root = b;
+	root->right->left = a;
 	root->right = bl;
-	b->left = a;
-
+	root = b;
+	root->height = update_height(root);
+	*/
+	if (root == this->root)
+	{
+		this->root = root->right;
+		Node * hold = root->right->left;
+		root->right->left = root;
+		root->right = hold;
+	}
+	else
+	{
+		Node * hold = root->right->left;
+		root->right->left = root;
+		root->right = hold;
+	}
 }
-/*
-///Basic left_right rotation
-void Autocompleter::left_right_rotate(Node * &root)
-{
-	//Left rotation
-	Node * hold = root->left;
-	Node * hold2 = root->left->right->left;
-	root->left->right->left = hold;
-	root->left->left = hold2;
-	root->left = root->left->right;
-	//Right rotation
-	right_rotate(root);
-}
-*/
 
+//////////////////////////////////////////////////////////////////////////////
 int Autocompleter::update_height(Node * root)
 {
 	if (root == nullptr)
 		return -1;
 	else
 	{
-		int left_height = update_height(root->left);
-		int right_height = update_height(root->right);
+		int left_height = (1 + update_height(root->left));
+		int right_height = (1 + update_height(root->right));
 
 		if (left_height > right_height)
 			return left_height;
@@ -266,3 +275,26 @@ int Autocompleter::update_height(Node * root)
 			return right_height;
 	}
 }
+
+void Autocompleter::display()
+{
+	display_recuse(root);
+}
+
+void Autocompleter::display_recuse(Node * root)
+{
+	if (root == NULL)
+		return;
+	else
+	{
+		display_recuse(root->left);
+		display_recuse(root->right);
+		cout << root->e.s << " :: ";
+		if (root->left != NULL)
+			cout << " left: " << root->left->e.s << " ";
+		if (root->right != NULL)
+			cout << " right : " << root->right->e.s << " ";
+		cout << endl;
+	}
+}
+//////////////////////////////////////////////////////////////////////////

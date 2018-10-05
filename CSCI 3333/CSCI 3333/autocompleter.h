@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include<iostream>
 
 using namespace std;
 
@@ -17,6 +18,14 @@ public:
 	//
 	// Must run in O(1) time.
 	Autocompleter();
+
+	///Test functions
+	void display();
+	string getRoot()
+	{
+		return this->root->e.s;
+	}
+
 
 	// Adds a string x to the dictionary.
 	// If x is already in the dictionary, does nothing.
@@ -119,7 +128,7 @@ private:
 	void right_rotate(Node* &root);
 	void left_rotate(Node* &root);
 
-	int max(Node * p);
+	void display_recuse(Node * root);
 	int update_height(Node *root);
 };
 
