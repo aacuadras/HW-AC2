@@ -12,9 +12,6 @@ Autocompleter::Autocompleter()
 	root = nullptr;
 }
 
-//Insert function
-
-
 //Size function
 int Autocompleter::size()
 {
@@ -197,22 +194,30 @@ void Autocompleter::right_rotate(Node *&root)
 	a->left = br;
 	b->right = a;
 	root = b;
+	
 
-	//update height somehow
+	br->height = br->height + 0; //Idk if this updates the height for the node
+	a->height = a->height - 1 + max(br->height(root->left), br->height(root->right));	//I thought we could use max but apparantly it is not defined
+	b->height = b->height + 1; //I just know that b's height is +1 since it is moved up
 }
 /*
 void Autocompleter::right_left_rotate(Node *&root)
 {
-	Node *a, *b, *c;
-	a = root;
-	b = root->right;
-	c = b->left;
+	Node *a, *b, *c, cr, cl; //declared pointers pointing to root(a)->right(b)->left(c)
 
-	right_rotate(b);		
+	a = root;		//a is decalred to root
+	b = root->right;		//b is to the right of the root
+	c = b->left;		//c is the value that needs to be put in the middle of a and b
 
+
+	right_rotate(b);		//a right left rotate consists of right rotate then
+							//a left rotate
 	left_rotate(a);
 
 	//also update height somehow
+
+	
+
 }
 */
 
