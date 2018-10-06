@@ -121,7 +121,7 @@ private:
 	void right_rotate(Node* &root);
 	void left_rotate(Node* &root);
 
-	int update_height(Node *root);
+	int MAX(Node *x, Node *y);
 };
 
 #endif
