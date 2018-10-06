@@ -1,5 +1,6 @@
 #include "autocompleter.h"
 
+
 ///TODO
 //Work on rotations
 //Aaron: left_rotation, left_right_rotation
@@ -10,6 +11,7 @@ Autocompleter::Autocompleter()
 {
 	//Root points to nothing when the Autocompleter is declared
 	root = nullptr;
+	
 }
 
 //Insert function
@@ -39,67 +41,75 @@ int Autocompleter::size_recurse(Node * root)
 //Completions function
 void Autocompleter::completions(string x, vector<string> &T)
 {
-	//Clearing the vector so it can be filled again
-	T.clear();
-	//Declaring new vector to store entries and send it to completions_recurse
-	vector<Entry> D;
-	//New entry with an empty string and 0 as frequency and storing it three times in the vector
-	//making it a size 3 vector
-	Entry emptyEntry;
-	emptyEntry.s = "";
-	emptyEntry.freq = 0;
-	D.push_back(emptyEntry);
-	D.push_back(emptyEntry);
-	D.push_back(emptyEntry);
+	vector<Entry> J;
+	completions_recurse(x, this->root, J);
+	T.resize(3);
 
-	completions_recurse(x, root, D);
+	T[0] = J[0].s;
+	T[1] = J[1].s;
+	T[2] = J[2].s;
+
+	if (T[2] == "")
+	{
+		T.pop_back();
+	}
+	if (T[1] == "")
+	{
+		T.pop_back();
+	}
+	if (T[0] == "")
+	{
+		T.pop_back();
+	}
+
 }
 
 //Recursive completions function
 void Autocompleter::completions_recurse(string x, Node* root, vector<Entry> &C)
 {
-	//If root equals null, do nothing
+	Entry obj;
+	obj.freq = 0;
+	obj.s = "";
+	if (C.empty() == true)
+	{
+		C.push_back(obj);
+		C.push_back(obj);
+		C.push_back(obj);
+	}
+
 	if (root == nullptr)
 	{
 		return;
 	}
-	else if (root->e.s > x)
+
+	if (root->e.s.substr(0, x.length()) == x)
 	{
-		//If the entry at root has greater frequency than the 1st element of the vector
-		//and the string (s) starts with the substring (x), the entry is inserted as the first element,
-		//the previous first element becomes the second and the previous second element becomes the last
-		if (root->e.freq >= C[0].freq && (root->e.s.rfind(x, 0) == 0))
+		if (root->e.freq > C[0].freq && C[1].s != root->e.s && C[2].s != root->e.s)
 		{
-			Entry hold, hold1;
-			hold = C[0];
-			C[0] = root->e;
-			hold1 = C[1];
-			C[1] = hold;
-			C[2] = hold1;
+			C.insert(C.begin(), root->e);
+			C.resize(3);
 		}
-		//If the entry at root has greater frequency than the 2nd element of the vector
-		//and the string (s) starts with the substring (x), the entry is inserted as the second element
-		//and the previous second element becomes the third element
-		else if (root->e.freq >= C[1].freq && (root->e.s.rfind(x, 0) == 0))
+		if (root->e.freq > C[1].freq && C[0].s != root->e.s && C[2].s != root->e.s)
 		{
-			Entry hold;
-			hold = C[1];
-			C[1] = root->e;
-			C[2] = hold;
+			C.insert(C.begin() + 1, root->e);
+			C.resize(3);
 		}
-		//If the entry at root has greater frequency than the 3rd element of the vector
-		//and the string (s) starts with the substring (x), the entry is inserted as the third element
-		else if (root->e.freq >= C[2].freq && (root->e.s.rfind(x, 0) == 0))
+		if (root->e.freq > C[2].freq && C[0].s != root->e.s && C[1].s != root->e.s)
 		{
-			C[2] = root->e;
+			C.insert(C.begin() + 2, root->e);
+			C.resize(3);
 		}
-		//Check for more strings until it reaches nullptr
+
 		completions_recurse(x, root->left, C);
 		completions_recurse(x, root->right, C);
 	}
+
+	else if (root->e.s.substr(0, x.length()) > x)
+	{
+		completions_recurse(x, root->left, C);
+	}
 	else
 	{
-		//If the the string of the entry is not greater than x, then it will check only to the right
 		completions_recurse(x, root->right, C);
 	}
 }
@@ -110,7 +120,7 @@ void Autocompleter::insert(string x, int freq)
 	Entry obj;
 	obj.s = x;
 	obj.freq = freq;
-
+	//cout << x << endl;
 	insert_recurse(obj, this->root);
 
 }
@@ -140,9 +150,8 @@ void Autocompleter::insert_recurse(Entry e, Node *&root)
 	}
 
 	//Will rebalance from the bottom to the top every time something is inserted
-	root->height = update_height(root);
 	rebalance(root);
-	root->height = update_height(root);
+	root->height = MAX(root->left, root->right) + 1;
 }
 
 void Autocompleter::rebalance(Node *&root)
@@ -190,61 +199,50 @@ void Autocompleter::rebalance(Node *&root)
 
 void Autocompleter::right_rotate(Node *&root)
 {
-	Node *a, *b, *br;
+	if (root->right == nullptr && root->left == nullptr)
+	{
+		return;
+	}
 
-	a = root;
-	b = root->left;
-	br = b->right;
+	Node *x = root;
+	root = root->left;
+	x->left = nullptr;
+	x->left = root->right;
+	root->right = x;
 
-	if (this->root == root)
-		this->root = b;
-	a->left = br;
-	b->right = a;
-	root = b;
-
-	root->height = update_height(root);
 }
 
 
 //"Completed left rotation"
 void Autocompleter::left_rotate(Node * &root)
 {
-	if (root == this->root)
+	if (root->right == nullptr && root->left == nullptr)
 	{
-		Node * a = root;
-		Node * b = root->right;
-		Node * bl = root->right->left;
+		return;
+	}
+	Node *x = root;
+	root = root->right;
+	x->right = nullptr;
+	x->right = root->left;
+	root->left = x;
 
-		b->left = a;
-		a->right = bl;
-		root = b;
-		this->root = root;
-	}
-	else
-	{
-		Node * hold = root->right->left;
-		Node * hold2 = root->right;
-		root->right->left = root;
-		root->right = hold;
-		root = hold2;
-	}
-	root->height = update_height(root);
-	root->left->height = update_height(root->left);
 }
 
 //Height update helper function
-int Autocompleter::update_height(Node * root)
+int Autocompleter::MAX(Node * x, Node *y)
 {
 	if (root == nullptr)
 		return -1;
+
 	else
 	{
-		int left_height = (1 + update_height(root->left));
-		int right_height = (1 + update_height(root->right));
-
-		if (left_height > right_height)
-			return left_height;
+		if (height(x) > height(y))
+		{
+			return height(x);
+		}
 		else
-			return right_height;
+		{
+			return height(y);
+		}
 	}
 }
